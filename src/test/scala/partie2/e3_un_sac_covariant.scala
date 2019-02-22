@@ -43,11 +43,11 @@ class e3_un_sac_covariant extends HandsOnSuite {
 
     type A = Nothing
 
-    override def map[B](fonction:A => B):Sac[B]  = ???
+    override def map[B](fonction:A => B):Sac[B]  = SacVide
 
-    override def flatMap[B](fonction:A => Sac[B]):Sac[B]  = ???
+    override def flatMap[B](fonction:A => Sac[B]):Sac[B]  = SacVide
 
-    override def filter(fonction:A => Boolean):Sac[A]  = ???
+    override def filter(fonction:A => Boolean):Sac[A]  = SacVide
 
     override def contenuOuSinon[B >: A](replacement:B):B = replacement
 
@@ -57,11 +57,11 @@ class e3_un_sac_covariant extends HandsOnSuite {
 
   case class SacPlein[A](contenu:A) extends Sac[A] {
 
-    override def map[B](fonction:A => B):Sac[B]  = ???
+    override def map[B](fonction:A => B):Sac[B]  = SacPlein(fonction(contenu))
 
-    override def flatMap[B](fonction:A => Sac[B]):Sac[B]  = ???
+    override def flatMap[B](fonction:A => Sac[B]):Sac[B]  = fonction(contenu)
 
-    override def filter(fonction:A => Boolean):Sac[A]  = ???
+    override def filter(fonction:A => Boolean):Sac[A]  = if (fonction(contenu)) {return SacPlein(contenu)} else { return SacVide}
 
     override def contenuOuSinon[B >: A](replacement:B):B = contenu
 
@@ -78,7 +78,6 @@ class e3_un_sac_covariant extends HandsOnSuite {
 
       case _ => fail("cela ne doit pas être un sac vide")
     }
-
   }
 
 

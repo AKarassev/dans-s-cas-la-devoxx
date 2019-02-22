@@ -20,8 +20,8 @@ class e0_list extends HandsOnSuite {
 
     final def union[B >: A](list:List[B]):List[B]= {
       this match {
-        case Cons(head,tail) => Cons(head, ???)
-        case Nil => ???
+        case Cons(head,tail) => Cons(head, tail.union(list))
+        case Nil => list
       }
     }
 
@@ -44,15 +44,30 @@ class e0_list extends HandsOnSuite {
    */
   case class Cons[A](head:A, tail:List[A]) extends  List[A] {
 
-    def map[B](fonction:A => B):List[B] = ???
+    override def map[B](fonction:A => B):Cons[B] = {
+      val newHead = fonction(head)
+      val newTail = tail.map(fonction)
+      Cons(newHead, newTail)
+    }
 
 
     /**
      * l'implémentation de flatMap a besoin d'union
      */
-    def flatMap[B](fonction:A => List[B]):List[B] = ???
+    override def flatMap[B](fonction:A => List[B]):List[B] = {
+      val newHead: List[B] = fonction(head)
+      val newTail: List[B] = tail.flatMap(fonction)
+      newHead.union(newTail)
+    }
 
-    def filter(fonction:A => Boolean):List[A] = ???
+    def filter(fonction:A => Boolean):List[A] = {
+      if (fonction(head)){
+        Cons(head, tail.filter(fonction))
+      } else {
+        tail.filter(fonction)
+      }
+    }
+
 
   }
 
@@ -62,11 +77,11 @@ class e0_list extends HandsOnSuite {
   case object Nil extends List[Nothing] {
     type A = Nothing
 
-    def map[B](fonction:A => B):List[B]  = ???
+    def map[B](fonction:A => B):List[B]  = Nil
 
     def flatMap[B](fonction:A => List[B]):List[B] = Nil
 
-    def filter(fonction:A => Boolean):List[A] = ???
+    def filter(fonction:A => Boolean):List[A] = Nil
   }
 
   exercice("création") {
@@ -85,6 +100,8 @@ class e0_list extends HandsOnSuite {
   exercice("union") {
 
     List(1,2,3).union(List(4,5)) should be(List(1,2,3,4,5))
+    val a: List[Int] = List(2, Integer.max(10, 5))
+
 
     List(1,2,3).union(List("A","B","C")) should be(List(1,2,3,"A","B","C"))
     // Cet example est un peu complexe, le compilateur cherche un B pour l'union tel que
